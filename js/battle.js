@@ -131,6 +131,9 @@ export class BattleSystem {
         if (!this.isActive) return;
         if (this.turn !== 0) return; // Not player turn
 
+        // Block further input immediately
+        this.turn = -1;
+
         switch(action) {
             case 'ATTACK':
                 this.playerAttack();
@@ -145,6 +148,9 @@ export class BattleSystem {
                 this.runAway();
                 return; // End immediately
         }
+
+        // Note: methods above set this.turn = 1 if action continues to enemy turn
+        // or call endBattle which clears isActive.
 
         if (this.isActive && this.turn === 1) {
             setTimeout(() => this.enemyTurn(), 1000);
@@ -238,6 +244,10 @@ export class BattleSystem {
     }
 
     endBattle(win) {
+        // Ensure this only runs once
+        if (!this.isActive) return;
+        this.isActive = false;
+
         if (win) {
             // Award XP
             const xpAmount = 20 * this.enemy.level;
@@ -247,16 +257,18 @@ export class BattleSystem {
             this.updateLogUI();
 
             if (leveledUp) {
-                 // We need a way to show this before closing, but MVP...
-                 // Let's delay closing slightly more or just alert?
-                 // The log update will happen, but might be cleared quickly.
-                 // Ideally, we chain states: Victory -> XP -> Close.
-                 // For now, just assume the log is enough if we delay.
-                 alert(`${this.playerMon.name} grew to Level ${this.playerMon.level}!`);
+                 this.log.push(`${this.playerMon.name} grew to Level ${this.playerMon.level}!`);
+                 this.updateLogUI();
+                 // alert removed to prevent blocking issues
             }
         }
 
-        this.isActive = false;
+        // Delay slightly to let user read log?
+        // Since we can't easily block, we just proceed.
+        // The user will see the log flash or we rely on them seeing it in menu later.
+        // Or we could set a timeout here before calling onBattleEnd,
+        // but that requires managing the "Battle Over" state.
+        // For MVP fix, we just close.
         this.onBattleEnd(win);
     }
 
