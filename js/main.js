@@ -5,6 +5,7 @@ import { Player } from './player.js';
 import { Storage } from './storage.js';
 import { Monster } from './monster.js';
 import { BattleSystem } from './battle.js';
+import { MenuSystem } from './menu.js';
 
 export class Game {
     constructor() {
@@ -32,7 +33,9 @@ export class Game {
             Storage.save(this.player);
         });
 
-        this.state = 'OVERWORLD'; // OVERWORLD, BATTLE
+        this.menu = new MenuSystem(this);
+
+        this.state = 'OVERWORLD'; // OVERWORLD, BATTLE, MENU
 
         this.input = new InputHandler();
         this.lastTime = 0;
@@ -42,8 +45,18 @@ export class Game {
     }
 
     resize() {
-        this.canvas.width = window.innerWidth;
-        this.canvas.height = window.innerHeight;
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        this.canvas.width = width;
+        this.canvas.height = height;
+
+        // Fix for mobile browser bars covering the bottom
+        const container = document.getElementById('game-container');
+        if (container) {
+            container.style.height = `${height}px`;
+        }
+
         if (this.camera) {
             this.camera.width = this.canvas.width;
             this.camera.height = this.canvas.height;
@@ -89,6 +102,8 @@ export class Game {
                 this.battle.handleAction('RUN');
                 this.input.keys.DOWN = false;
             }
+        } else if (this.state === 'MENU') {
+            this.menu.handleInput(this.input);
         }
     }
 
@@ -124,6 +139,12 @@ export class Game {
             ctx.fillRect(screenX, screenY, TILE_SIZE, TILE_SIZE);
         } else if (this.state === 'BATTLE') {
             this.battle.draw(ctx, this.canvas.width, this.canvas.height);
+        } else if (this.state === 'MENU') {
+            // Draw overworld behind menu (optional, or just background)
+             // Draw map
+            this.map.draw(ctx, this.camera.x, this.camera.y, this.canvas.width, this.canvas.height);
+
+            this.menu.draw(ctx, this.canvas.width, this.canvas.height);
         }
     }
 

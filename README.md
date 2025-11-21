@@ -14,7 +14,8 @@ A simple Pokemon-like game built with HTML5 Canvas and Vanilla JavaScript. Optim
 
 1.  **Movement**: Use the on-screen D-pad to move.
 2.  **Encounters**: Randomly happen when walking on grass.
-3.  **Battle Controls**:
+3.  **Menu**: Press the **☰** button to view your team and inventory.
+4.  **Battle Controls**:
     - **Attack**: Press the **A** button (Red).
     - **Catch**: Press **Up** on the D-pad.
     - **Run**: Press **Down** on the D-pad.
