@@ -411,7 +411,7 @@ export class BattleSystem {
             }
             this.updateLogUI();
 
-            if (leveledUp && this.playerMon.level === 5) {
+            if (this.playerMon.level >= 5 && this.playerMon.shape !== 'PENTAGON') {
                 // Start Evolution Sequence instead of showing Continue immediately
                 // We'll use a small delay to let the level up message show
                 setTimeout(() => this.startEvolutionSequence(), 2000);
