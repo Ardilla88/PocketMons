@@ -71,12 +71,17 @@ export class MenuSystem {
             const div = document.createElement('div');
             div.className = 'list-item';
 
-            // Create inner HTML with a button if potions are available
+            // Create inner HTML with a button
             let actionHtml = '';
-            if (mon.currentHp < mon.maxHp && this.game.player.inventory.potions > 0) {
+            const canHeal = mon.currentHp < mon.maxHp;
+            const hasPotions = this.game.player.inventory.potions > 0;
+
+            if (canHeal && hasPotions) {
                 actionHtml = `<button class="ui-btn btn-blue" style="font-size: 12px; padding: 5px; margin-top: 5px;" data-index="${index}">Heal (Potion)</button>`;
-            } else if (mon.currentHp < mon.maxHp) {
-                actionHtml = `<div style="font-size:12px; color: #aaa;">Needs Heal</div>`;
+            } else if (canHeal && !hasPotions) {
+                actionHtml = `<button class="ui-btn" style="font-size: 12px; padding: 5px; margin-top: 5px; opacity: 0.5; cursor: not-allowed;">No Potions</button>`;
+            } else {
+                actionHtml = `<button class="ui-btn" style="font-size: 12px; padding: 5px; margin-top: 5px; opacity: 0.5; cursor: not-allowed;">HP Full</button>`;
             }
 
             div.innerHTML = `
