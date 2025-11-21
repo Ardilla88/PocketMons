@@ -12,7 +12,23 @@ export class BattleSystem {
         this.log = []; // Battle log messages
         this.turn = 0; // 0 = Player, 1 = Enemy
 
+        this.visualXp = 0; // For animation
+        this.targetXp = 0;
+
         this.initUI();
+    }
+
+    update(deltaTime) {
+        if (!this.playerMon) return;
+
+        // Animate XP
+        if (Math.abs(this.visualXp - this.targetXp) > 0.1) {
+            // Lerp speed
+            const diff = this.targetXp - this.visualXp;
+            this.visualXp += diff * 0.05; // simple smoothing
+        } else {
+            this.visualXp = this.targetXp;
+        }
     }
 
     initUI() {
@@ -94,6 +110,11 @@ export class BattleSystem {
 
     switchPokemon(newMon) {
         this.playerMon = newMon;
+
+        // Reset XP bars for new mon
+        this.visualXp = this.playerMon.xp;
+        this.targetXp = this.playerMon.xp;
+
         this.log.push(`Go! ${newMon.name}!`);
         this.updateLogUI();
         // Switching takes a turn
@@ -122,6 +143,10 @@ export class BattleSystem {
             // Fallback starter if team is empty
             this.playerMon = new Monster({ name: 'Partner', color: '#ffd700', hp: 25, attack: 4 }, 1);
         }
+
+        // Init XP
+        this.visualXp = this.playerMon.xp;
+        this.targetXp = this.playerMon.xp;
 
         this.log.push(`Go! ${this.playerMon.name}!`);
         this.turn = 0; // Player starts
@@ -253,6 +278,8 @@ export class BattleSystem {
             const xpAmount = 20 * this.enemy.level;
             const leveledUp = this.playerMon.gainXp(xpAmount);
 
+            this.targetXp = this.playerMon.xp;
+
             this.log.push(`Won! Gained ${xpAmount} XP.`);
             if (leveledUp) {
                  this.log.push(`Leveled up to ${this.playerMon.level}!`);
@@ -337,7 +364,8 @@ export class BattleSystem {
         ctx.fillRect(playerX + 70, playerY + 45, 100, 5);
 
         // XP Bar Fill
-        const xpRatio = this.playerMon.xp / this.playerMon.maxXp;
+        // Use visualXp instead of raw xp
+        const xpRatio = Math.min(1, Math.max(0, this.visualXp / this.playerMon.maxXp));
         ctx.fillStyle = '#00bcd4'; // Cyan
         ctx.fillRect(playerX + 70, playerY + 45, 100 * xpRatio, 5);
 

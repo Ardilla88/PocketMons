@@ -77,25 +77,35 @@ export class MenuSystem {
             const hasPotions = this.game.player.inventory.potions > 0;
 
             if (canHeal && hasPotions) {
-                actionHtml = `<button class="ui-btn btn-blue" style="font-size: 12px; padding: 5px; margin-top: 5px;" data-index="${index}">Heal (Potion)</button>`;
+                actionHtml = `<button class="ui-btn btn-blue btn-heal" style="font-size: 12px; padding: 5px; margin-top: 5px;" data-index="${index}">Heal</button>`;
             } else if (canHeal && !hasPotions) {
                 actionHtml = `<button class="ui-btn" style="font-size: 12px; padding: 5px; margin-top: 5px; opacity: 0.5; cursor: not-allowed;">No Potions</button>`;
             } else {
                 actionHtml = `<button class="ui-btn" style="font-size: 12px; padding: 5px; margin-top: 5px; opacity: 0.5; cursor: not-allowed;">HP Full</button>`;
             }
 
+            // Release button (not for last monster)
+            let releaseHtml = '';
+            if (team.length > 1) {
+                releaseHtml = `<button class="ui-btn btn-red btn-release" style="font-size: 12px; padding: 5px; margin-top: 5px; margin-left: 5px;" data-index="${index}">Release</button>`;
+            }
+
             div.innerHTML = `
                 <div style="color: ${mon.color}; font-weight: bold;">${mon.name} Lv${mon.level}</div>
                 <div style="font-size: 12px;">XP: ${mon.xp}/${mon.maxXp}</div>
                 <div style="font-size: 14px;">HP: ${mon.currentHp}/${mon.maxHp}</div>
-                ${actionHtml}
+                <div style="display:flex;">
+                    ${actionHtml}
+                    ${releaseHtml}
+                </div>
             `;
 
-            // Add click listener for the button
-            const btn = div.querySelector('button');
-            if (btn) {
-                btn.addEventListener('click', () => this.healMonster(index));
-            }
+            // Add click listeners
+            const healBtn = div.querySelector('.btn-heal');
+            if (healBtn) healBtn.addEventListener('click', () => this.healMonster(index));
+
+            const releaseBtn = div.querySelector('.btn-release');
+            if (releaseBtn) releaseBtn.addEventListener('click', () => this.releaseMonster(index));
 
             container.appendChild(div);
         });
@@ -110,6 +120,20 @@ export class MenuSystem {
             mon.currentHp = Math.min(mon.currentHp + 20, mon.maxHp);
 
             // Re-render to show updates
+            const content = document.getElementById('submenu-content');
+            content.innerHTML = '';
+            this.renderTeam(content);
+        }
+    }
+
+    releaseMonster(index) {
+        const team = this.game.player.team;
+        const mon = team[index];
+
+        if (confirm(`Are you sure you want to release ${mon.name}?`)) {
+            team.splice(index, 1);
+
+            // Re-render
             const content = document.getElementById('submenu-content');
             content.innerHTML = '';
             this.renderTeam(content);

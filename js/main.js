@@ -84,6 +84,7 @@ export class Game {
             }
         } else if (this.state === 'BATTLE') {
             // Input is now handled by DOM buttons in BattleSystem
+            this.battle.update(deltaTime);
         } else if (this.state === 'MENU') {
             // Input is now handled by DOM buttons in MenuSystem
         }

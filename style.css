@@ -124,24 +124,6 @@ canvas {
     background: rgba(0, 0, 0, 0.8);
 }
 
-#action-btn {
-    width: 70px;
-    height: 70px;
-    background: rgba(255, 0, 0, 0.5);
-    border: 2px solid white;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-#action-btn:active {
-    background: rgba(255, 0, 0, 0.8);
-}
-
 /* Generic UI Buttons */
 .ui-btn {
     display: block;
