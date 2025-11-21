@@ -15,6 +15,9 @@ export class BattleSystem {
         this.visualXp = 0; // For animation
         this.targetXp = 0;
 
+        this.playerVisualHp = 0;
+        this.enemyVisualHp = 0;
+
         this.initUI();
     }
 
@@ -23,11 +26,28 @@ export class BattleSystem {
 
         // Animate XP
         if (Math.abs(this.visualXp - this.targetXp) > 0.1) {
-            // Lerp speed
             const diff = this.targetXp - this.visualXp;
-            this.visualXp += diff * 0.05; // simple smoothing
+            this.visualXp += diff * 0.05;
         } else {
             this.visualXp = this.targetXp;
+        }
+
+        // Animate Player HP
+        if (Math.abs(this.playerVisualHp - this.playerMon.currentHp) > 0.1) {
+            const diff = this.playerMon.currentHp - this.playerVisualHp;
+            this.playerVisualHp += diff * 0.1; // Slightly faster than XP
+        } else {
+            this.playerVisualHp = this.playerMon.currentHp;
+        }
+
+        // Animate Enemy HP
+        if (this.enemy) {
+            if (Math.abs(this.enemyVisualHp - this.enemy.currentHp) > 0.1) {
+                const diff = this.enemy.currentHp - this.enemyVisualHp;
+                this.enemyVisualHp += diff * 0.1;
+            } else {
+                this.enemyVisualHp = this.enemy.currentHp;
+            }
         }
     }
 
@@ -111,9 +131,10 @@ export class BattleSystem {
     switchPokemon(newMon) {
         this.playerMon = newMon;
 
-        // Reset XP bars for new mon
+        // Reset bars for new mon
         this.visualXp = this.playerMon.xp;
         this.targetXp = this.playerMon.xp;
+        this.playerVisualHp = this.playerMon.currentHp;
 
         this.log.push(`Go! ${newMon.name}!`);
         this.updateLogUI();
@@ -144,9 +165,11 @@ export class BattleSystem {
             this.playerMon = new Monster({ name: 'Partner', color: '#ffd700', hp: 25, attack: 4 }, 1);
         }
 
-        // Init XP
+        // Init Visuals
         this.visualXp = this.playerMon.xp;
         this.targetXp = this.playerMon.xp;
+        this.playerVisualHp = this.playerMon.currentHp;
+        this.enemyVisualHp = this.enemy.currentHp;
 
         this.log.push(`Go! ${this.playerMon.name}!`);
         this.turn = 0; // Player starts
@@ -345,8 +368,11 @@ export class BattleSystem {
         // Enemy Stats
         ctx.fillStyle = 'white';
         ctx.font = '16px Courier New';
-        ctx.fillText(`${this.enemy.name}`, enemyX - 40, enemyY - 20);
-        ctx.fillText(`HP: ${this.enemy.currentHp}/${this.enemy.maxHp}`, enemyX - 40, enemyY - 5);
+        ctx.fillText(`${this.enemy.name}`, enemyX - 40, enemyY - 25);
+        ctx.fillText(`HP: ${this.enemy.currentHp}/${this.enemy.maxHp}`, enemyX - 40, enemyY - 10);
+
+        // Enemy HP Bar
+        this.drawHpBar(ctx, enemyX - 40, enemyY - 5, this.enemyVisualHp, this.enemy.maxHp);
 
         // Player Mon (Bottom Left)
         const playerX = width * 0.2;
@@ -359,16 +385,37 @@ export class BattleSystem {
         ctx.fillText(`${this.playerMon.name} Lv${this.playerMon.level}`, playerX + 70, playerY + 20);
         ctx.fillText(`HP: ${this.playerMon.currentHp}/${this.playerMon.maxHp}`, playerX + 70, playerY + 35);
 
+        // Player HP Bar
+        this.drawHpBar(ctx, playerX + 70, playerY + 40, this.playerVisualHp, this.playerMon.maxHp);
+
         // XP Bar Background
         ctx.fillStyle = '#444';
-        ctx.fillRect(playerX + 70, playerY + 45, 100, 5);
+        ctx.fillRect(playerX + 70, playerY + 50, 100, 5);
 
         // XP Bar Fill
         // Use visualXp instead of raw xp
         const xpRatio = Math.min(1, Math.max(0, this.visualXp / this.playerMon.maxXp));
         ctx.fillStyle = '#00bcd4'; // Cyan
-        ctx.fillRect(playerX + 70, playerY + 45, 100 * xpRatio, 5);
+        ctx.fillRect(playerX + 70, playerY + 50, 100 * xpRatio, 5);
 
         // Controls are now DOM based
+    }
+
+    drawHpBar(ctx, x, y, current, max) {
+        const width = 100;
+        const height = 8;
+        const ratio = Math.min(1, Math.max(0, current / max));
+
+        // Background
+        ctx.fillStyle = '#555';
+        ctx.fillRect(x, y, width, height);
+
+        // Color logic
+        let color = '#4caf50'; // Green
+        if (ratio < 0.2) color = '#f44336'; // Red
+        else if (ratio < 0.5) color = '#ffeb3b'; // Yellow
+
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, width * ratio, height);
     }
 }
