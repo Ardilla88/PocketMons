@@ -117,8 +117,10 @@ export class BattleSystem {
         const content = document.getElementById('battle-submenu-content');
         const title = document.getElementById('battle-submenu-title');
         const backBtn = document.getElementById('btn-battle-back');
+        const mainMenu = document.getElementById('battle-main-menu');
 
         menu.classList.remove('hidden');
+        mainMenu.classList.add('hidden'); // Hide main menu buttons
         content.innerHTML = '';
 
         if (hideBack) {
@@ -138,6 +140,14 @@ export class BattleSystem {
 
     closeBattleMenu() {
         document.getElementById('battle-submenu').classList.add('hidden');
+        // Restore main menu if we are still in MENU state
+        // Since closeBattleMenu is usually called by Back button or action selection
+        // If action selection, we switch to LOG state anyway which hides main menu.
+        // If Back button, we want main menu back.
+
+        // We assume Back button logic here mostly.
+        // If action calls this, it immediately calls handleAction which sets UI state to LOG.
+        document.getElementById('battle-main-menu').classList.remove('hidden');
     }
 
     renderBag(container) {
