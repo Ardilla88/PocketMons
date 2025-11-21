@@ -10,6 +10,7 @@ export class Player {
         this.moving = false;
         this.targetX = this.x;
         this.targetY = this.y;
+        this.facing = { x: 0, y: 1 }; // Default down
 
         this.team = [];
         this.inventory = {
@@ -30,6 +31,8 @@ export class Player {
             else if (input.keys.RIGHT) dx = 1;
 
             if (dx !== 0 || dy !== 0) {
+                this.facing = { x: dx, y: dy }; // Update facing
+
                 const nextGridX = Math.round(this.x / TILE_SIZE) + dx;
                 const nextGridY = Math.round(this.y / TILE_SIZE) + dy;
 

@@ -3,7 +3,7 @@ import { GameMap, TILE_SIZE, TileType } from './map.js';
 import { Camera } from './view.js';
 import { Player } from './player.js';
 import { Storage } from './storage.js';
-import { Monster } from './monster.js';
+import { Monster, MonsterType } from './monster.js';
 import { BattleSystem } from './battle.js';
 import { MenuSystem } from './menu.js';
 import { VERSION } from './config.js';
@@ -12,6 +12,9 @@ export class Game {
     constructor() {
         // Set Version
         document.getElementById('version-watermark').innerText = VERSION;
+
+        // Bind Fish Button
+        document.getElementById('fish-btn').addEventListener('click', () => this.tryFish());
 
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
@@ -127,6 +130,46 @@ export class Game {
 
         console.log("Team Healed and Supplies Refilled!");
         alert("Your team was healed and supplies refilled!"); // Simple feedback for user
+    }
+
+    tryFish() {
+        if (this.state !== 'OVERWORLD') return;
+
+        // Check tile player is facing
+        const gridX = Math.round(this.player.x / TILE_SIZE) + this.player.facing.x;
+        const gridY = Math.round(this.player.y / TILE_SIZE) + this.player.facing.y;
+
+        const tile = this.map.getTile(gridX, gridY);
+
+        if (tile === TileType.WATER) {
+            // 30% chance to hook
+            if (Math.random() < 0.3) {
+                console.log("Hooked a Pokemon!");
+                // Generate a Water type (BlueMon for now)
+                // Assuming BlueMon is water-like
+                const types = Object.values(Monster.MonsterType || {}); // Need access to MonsterType, but it's exported separately
+                // Actually Monster.generateRandom picks random.
+                // I'll implement a specific generateWater() or just use generateRandom for now.
+                // Let's construct manually to ensure "Water" theme (BlueMon).
+                // Since MonsterType is not static on Monster class, I need to check imports.
+                // I can import MonsterType in main.js or just rely on generateRandom.
+
+                // Force BlueMon for fishing
+                const enemy = new Monster(MonsterType.BLUE_MON, Math.floor(Math.random() * 5) + 1);
+
+                this.battle.startBattle(enemy);
+                this.state = 'BATTLE';
+                // Override log
+                this.battle.log = ["Hooked a pokemon!"];
+                this.battle.updateLogUI();
+            } else {
+                console.log("Not even a nibble...");
+                // Maybe show a toast or alert?
+                // For now, just console.
+            }
+        } else {
+            console.log("Can't fish here!");
+        }
     }
 
     draw(ctx) {
