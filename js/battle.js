@@ -97,13 +97,20 @@ export class BattleSystem {
         document.getElementById('btn-battle-back').addEventListener('click', () => this.closeBattleMenu());
     }
 
-    showBattleMenu(type) {
+    showBattleMenu(type, hideBack = false) {
         const menu = document.getElementById('battle-submenu');
         const content = document.getElementById('battle-submenu-content');
         const title = document.getElementById('battle-submenu-title');
+        const backBtn = document.getElementById('btn-battle-back');
 
         menu.classList.remove('hidden');
         content.innerHTML = '';
+
+        if (hideBack) {
+            backBtn.classList.add('hidden');
+        } else {
+            backBtn.classList.remove('hidden');
+        }
 
         if (type === 'BAG') {
             title.innerText = "BAG";
@@ -164,6 +171,7 @@ export class BattleSystem {
     }
 
     switchPokemon(newMon) {
+        const isForced = this.playerMon.currentHp <= 0;
         this.playerMon = newMon;
 
         // Reset bars for new mon
@@ -173,9 +181,15 @@ export class BattleSystem {
 
         this.log.push(`Go! ${newMon.name}!`);
         this.updateLogUI();
-        // Switching takes a turn
-        this.turn = 1;
-        setTimeout(() => this.enemyTurn(), 1000);
+
+        if (isForced) {
+            // Free turn if previous mon fainted
+            this.turn = 0;
+        } else {
+            // Switching takes a turn
+            this.turn = 1;
+            setTimeout(() => this.enemyTurn(), 1000);
+        }
     }
 
     updateLogUI() {
@@ -318,12 +332,30 @@ export class BattleSystem {
         if (this.playerMon.currentHp <= 0) {
             this.playerMon.currentHp = 0;
             this.log.push(`${this.playerMon.name} fainted!`);
-            this.log.push(`You lost...`); // Simple Game Over handling
             this.updateLogUI();
-            setTimeout(() => this.endBattle(false), 2000);
+
+            if (this.hasAlivePokemon()) {
+                setTimeout(() => this.forceSwitch(), 1500);
+            } else {
+                this.log.push(`You lost...`);
+                this.updateLogUI();
+                setTimeout(() => this.endBattle(false), 2000);
+            }
         } else {
             this.turn = 0;
         }
+    }
+
+    hasAlivePokemon() {
+        return this.player.team.some(mon => mon.currentHp > 0);
+    }
+
+    forceSwitch() {
+        this.log.push("Choose your next Pokemon!");
+        this.updateLogUI();
+
+        // Show PKMN menu but hide Back button
+        this.showBattleMenu('PKMN', true);
     }
 
     endBattle(win) {

@@ -164,7 +164,7 @@ canvas {
     left: 0;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: space-between; /* Space between Top (Log) and Bottom (Controls) */
     padding: 20px;
     pointer-events: none;
 }
@@ -174,13 +174,14 @@ canvas {
     border: 2px solid white;
     border-radius: 8px;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-top: 90px; /* Clear Enemy HUD */
     min-height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
     font-size: 16px;
+    pointer-events: auto; /* Allow scrolling if needed */
 }
 
 .battle-controls {
