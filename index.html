@@ -32,6 +32,37 @@
 
             <!-- Battle UI -->
             <div id="battle-ui" class="hidden">
+                <!-- HUD Overlay -->
+                <div id="battle-hud">
+                    <!-- Enemy Status (Top Left) -->
+                    <div id="enemy-status" class="status-panel">
+                        <div class="status-row">
+                            <span id="enemy-name">Name</span>
+                            <span id="enemy-lvl">Lv1</span>
+                        </div>
+                        <div class="hp-bar-bg">
+                            <div id="enemy-hp-bar" class="hp-bar-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Player Status (Bottom Right) -->
+                    <div id="player-status" class="status-panel">
+                        <div class="status-row">
+                            <span id="player-name">Name</span>
+                            <span id="player-lvl">Lv1</span>
+                        </div>
+                        <div class="hp-bar-bg">
+                            <div id="player-hp-bar" class="hp-bar-fill"></div>
+                        </div>
+                        <div class="status-text">
+                            <span id="player-hp-text">20/20</span>
+                        </div>
+                        <div class="xp-bar-bg">
+                            <div id="player-xp-bar" class="xp-bar-fill"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="battle-info-box" id="battle-log"></div>
 
                 <!-- Battle Main Menu -->

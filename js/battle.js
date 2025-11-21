@@ -49,6 +49,41 @@ export class BattleSystem {
                 this.enemyVisualHp = this.enemy.currentHp;
             }
         }
+
+        // Update HTML HUD
+        this.updateBattleHUD();
+    }
+
+    updateBattleHUD() {
+        if (!this.playerMon || !this.enemy) return;
+
+        // Enemy
+        document.getElementById('enemy-name').innerText = this.enemy.name;
+        document.getElementById('enemy-lvl').innerText = `Lv${this.enemy.level}`;
+        this.updateBar('enemy-hp-bar', this.enemyVisualHp, this.enemy.maxHp, true);
+
+        // Player
+        document.getElementById('player-name').innerText = this.playerMon.name;
+        document.getElementById('player-lvl').innerText = `Lv${this.playerMon.level}`;
+        document.getElementById('player-hp-text').innerText = `${Math.round(this.playerVisualHp)}/${this.playerMon.maxHp}`;
+
+        this.updateBar('player-hp-bar', this.playerVisualHp, this.playerMon.maxHp, true);
+        this.updateBar('player-xp-bar', this.visualXp, this.playerMon.maxXp, false);
+    }
+
+    updateBar(elementId, current, max, isHp) {
+        const bar = document.getElementById(elementId);
+        if (!bar) return;
+
+        const ratio = Math.min(1, Math.max(0, current / max));
+        bar.style.width = `${ratio * 100}%`;
+
+        if (isHp) {
+            let color = '#4caf50'; // Green
+            if (ratio < 0.2) color = '#f44336'; // Red
+            else if (ratio < 0.5) color = '#ffeb3b'; // Yellow
+            bar.style.backgroundColor = color;
+        }
     }
 
     initUI() {
@@ -358,64 +393,18 @@ export class BattleSystem {
         ctx.fillStyle = '#222';
         ctx.fillRect(0, 0, width, height);
 
-        // Draw Battle Scene
+        // Draw Battle Scene (Just sprites now, UI is HTML)
+
         // Enemy (Top Right)
         const enemyX = width * 0.7;
         const enemyY = height * 0.2;
         ctx.fillStyle = this.enemy.color;
         ctx.fillRect(enemyX, enemyY, 60, 60);
 
-        // Enemy Stats
-        ctx.fillStyle = 'white';
-        ctx.font = '16px Courier New';
-        ctx.fillText(`${this.enemy.name}`, enemyX - 40, enemyY - 25);
-        ctx.fillText(`HP: ${this.enemy.currentHp}/${this.enemy.maxHp}`, enemyX - 40, enemyY - 10);
-
-        // Enemy HP Bar
-        this.drawHpBar(ctx, enemyX - 40, enemyY - 5, this.enemyVisualHp, this.enemy.maxHp);
-
         // Player Mon (Bottom Left)
         const playerX = width * 0.2;
         const playerY = height * 0.5;
         ctx.fillStyle = this.playerMon.color;
         ctx.fillRect(playerX, playerY, 60, 60);
-
-        // Player Stats
-        ctx.fillStyle = 'white';
-        ctx.fillText(`${this.playerMon.name} Lv${this.playerMon.level}`, playerX + 70, playerY + 20);
-        ctx.fillText(`HP: ${this.playerMon.currentHp}/${this.playerMon.maxHp}`, playerX + 70, playerY + 35);
-
-        // Player HP Bar
-        this.drawHpBar(ctx, playerX + 70, playerY + 40, this.playerVisualHp, this.playerMon.maxHp);
-
-        // XP Bar Background
-        ctx.fillStyle = '#444';
-        ctx.fillRect(playerX + 70, playerY + 50, 100, 5);
-
-        // XP Bar Fill
-        // Use visualXp instead of raw xp
-        const xpRatio = Math.min(1, Math.max(0, this.visualXp / this.playerMon.maxXp));
-        ctx.fillStyle = '#00bcd4'; // Cyan
-        ctx.fillRect(playerX + 70, playerY + 50, 100 * xpRatio, 5);
-
-        // Controls are now DOM based
-    }
-
-    drawHpBar(ctx, x, y, current, max) {
-        const width = 100;
-        const height = 8;
-        const ratio = Math.min(1, Math.max(0, current / max));
-
-        // Background
-        ctx.fillStyle = '#555';
-        ctx.fillRect(x, y, width, height);
-
-        // Color logic
-        let color = '#4caf50'; // Green
-        if (ratio < 0.2) color = '#f44336'; // Red
-        else if (ratio < 0.5) color = '#ffeb3b'; // Yellow
-
-        ctx.fillStyle = color;
-        ctx.fillRect(x, y, width * ratio, height);
     }
 }
