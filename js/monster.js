@@ -1,7 +1,8 @@
 export const MonsterType = {
     RED_MON: { name: 'RedMon', color: '#ff5252', hp: 20, attack: 5 },
     BLUE_MON: { name: 'BlueMon', color: '#448aff', hp: 25, attack: 4 },
-    GREEN_MON: { name: 'GreenMon', color: '#69f0ae', hp: 30, attack: 3 }
+    GREEN_MON: { name: 'GreenMon', color: '#69f0ae', hp: 30, attack: 3 },
+    FERNORLAX: { name: 'Fernorlax', color: '#9c27b0', hp: 999999, attack: 10 }
 };
 
 export class Monster {
@@ -38,7 +39,12 @@ export class Monster {
     }
 
     static generateRandom(level = 1) {
-        const types = Object.values(MonsterType);
+        // 1% chance for Fernorlax
+        if (Math.random() < 0.01) {
+            return new Monster(MonsterType.FERNORLAX, level);
+        }
+
+        const types = Object.values(MonsterType).filter(t => t.name !== 'Fernorlax');
         const randomType = types[Math.floor(Math.random() * types.length)];
         return new Monster(randomType, level);
     }
