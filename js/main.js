@@ -199,12 +199,24 @@ export class Game {
     updateUIState() {
         const controls = document.getElementById('controls');
         const battleUI = document.getElementById('battle-ui');
+        const fishBtn = document.getElementById('fish-btn');
 
         // Hide game controls/battle UI based on state
         if (this.state === 'OVERWORLD') {
             controls.classList.remove('hidden');
             battleUI.classList.add('hidden');
-            // Menu handled by MenuSystem
+
+            // Check if fishing is possible (facing water)
+            const gridX = Math.round(this.player.x / TILE_SIZE) + this.player.facing.x;
+            const gridY = Math.round(this.player.y / TILE_SIZE) + this.player.facing.y;
+            const tile = this.map.getTile(gridX, gridY);
+
+            if (tile === TileType.WATER) {
+                fishBtn.classList.remove('hidden');
+            } else {
+                fishBtn.classList.add('hidden');
+            }
+
         } else if (this.state === 'BATTLE') {
             controls.classList.add('hidden');
             battleUI.classList.remove('hidden');
