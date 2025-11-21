@@ -60,6 +60,7 @@ export class BattleSystem {
         // Enemy
         document.getElementById('enemy-name').innerText = this.enemy.name;
         document.getElementById('enemy-lvl').innerText = `Lv${this.enemy.level}`;
+        document.getElementById('enemy-hp-text').innerText = `${Math.round(this.enemyVisualHp)}/${this.enemy.maxHp}`;
         this.updateBar('enemy-hp-bar', this.enemyVisualHp, this.enemy.maxHp, true);
 
         // Player
