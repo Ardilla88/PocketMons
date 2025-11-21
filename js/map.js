@@ -14,7 +14,7 @@ export const TileType = {
 // W = Wall, G = Grass, . = Ground, ~ = Water, C = Center (Heal)
 const MAP_LAYOUT = [
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-    "W.C..........G...............W",
+    "W............G...............W",
     "W............G...............W",
     "W...GGGG.....G...............W",
     "W...GGGG.....G...............W",
@@ -23,7 +23,7 @@ const MAP_LAYOUT = [
     "W~~~~~~...........GGGGGG.....W",
     "W~~~~~~...........GGGGGG.....W",
     "W.................GGGGGG.....W",
-    "W............................W",
+    "W...........C................W",
     "W............................W",
     "W......WWWWWW................W",
     "W......W~~~~W................W",
@@ -64,6 +64,7 @@ export class GameMap {
                     case 'W': row.push(TileType.WALL); break;
                     case 'G': row.push(TileType.GRASS); break;
                     case '~': row.push(TileType.WATER); break;
+                    case 'C': row.push(TileType.CENTER); break;
                     default:  row.push(TileType.GROUND); break;
                 }
             }

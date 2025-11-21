@@ -115,9 +115,13 @@ export class Game {
             this.player.inventory.pokeballs = 5;
         }
 
+        // Refill Potions if low
+        if (this.player.inventory.potions < 3) {
+            this.player.inventory.potions = 3;
+        }
+
         console.log("Team Healed and Supplies Refilled!");
-        // Visual feedback (simple alert or log for now)
-        // Could flash screen or show modal, but console + immediate effect is MVP
+        alert("Your team was healed and supplies refilled!"); // Simple feedback for user
     }
 
     draw(ctx) {

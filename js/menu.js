@@ -86,6 +86,7 @@ export class MenuSystem {
 
             div.innerHTML = `
                 <div style="color: ${mon.color}; font-weight: bold;">${mon.name} Lv${mon.level}</div>
+                <div style="font-size: 12px;">XP: ${mon.xp}/${mon.maxXp}</div>
                 <div style="font-size: 14px;">HP: ${mon.currentHp}/${mon.maxHp}</div>
                 ${actionHtml}
             `;

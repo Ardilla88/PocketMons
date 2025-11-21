@@ -238,6 +238,24 @@ export class BattleSystem {
     }
 
     endBattle(win) {
+        if (win) {
+            // Award XP
+            const xpAmount = 20 * this.enemy.level;
+            const leveledUp = this.playerMon.gainXp(xpAmount);
+
+            this.log.push(`Gained ${xpAmount} XP!`);
+            this.updateLogUI();
+
+            if (leveledUp) {
+                 // We need a way to show this before closing, but MVP...
+                 // Let's delay closing slightly more or just alert?
+                 // The log update will happen, but might be cleared quickly.
+                 // Ideally, we chain states: Victory -> XP -> Close.
+                 // For now, just assume the log is enough if we delay.
+                 alert(`${this.playerMon.name} grew to Level ${this.playerMon.level}!`);
+            }
+        }
+
         this.isActive = false;
         this.onBattleEnd(win);
     }
