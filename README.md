@@ -14,11 +14,13 @@ A simple Pokemon-like game built with HTML5 Canvas and Vanilla JavaScript. Optim
 
 1.  **Movement**: Use the on-screen D-pad to move.
 2.  **Encounters**: Randomly happen when walking on grass.
-3.  **Menu**: Press the **☰** button to open the pause menu. Use the touch buttons to navigate.
-4.  **Battle Controls**:
-    - **Attack**: Tap the Red "Attack" button.
-    - **Catch**: Tap the Blue "Catch" button.
-    - **Run**: Tap the Yellow "Run" button.
+3.  **Healing & Supplies**: Walk on the **Yellow 'C' Tile** to heal your team and refill PokeBalls.
+4.  **Menu**: Press the **☰** button to view your team and inventory. You can heal monsters here if you have potions.
+5.  **Battle Controls**:
+    - **Attack**: Tap "Attack" to damage the wild monster.
+    - **Pkmn**: Tap "Pkmn" to switch your active monster.
+    - **Bag**: Tap "Bag" to throw a PokeBall or use a Potion.
+    - **Run**: Tap "Run" to flee.
 
 ## Deployment (GitHub Pages)
 

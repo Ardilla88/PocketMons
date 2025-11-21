@@ -79,8 +79,8 @@ export class Game {
                     this.player.lastSavedY = this.player.y;
                 }
 
-                // Check for encounters
-                this.checkEncounter();
+                // Check for encounters or interactions
+                this.checkInteractions();
             }
         } else if (this.state === 'BATTLE') {
             // Input is now handled by DOM buttons in BattleSystem
@@ -89,7 +89,7 @@ export class Game {
         }
     }
 
-    checkEncounter() {
+    checkInteractions() {
         const gridX = Math.round(this.player.x / TILE_SIZE);
         const gridY = Math.round(this.player.y / TILE_SIZE);
         const tile = this.map.getTile(gridX, gridY);
@@ -101,7 +101,23 @@ export class Game {
                 this.battle.startBattle(enemy);
                 this.state = 'BATTLE';
             }
+        } else if (tile === TileType.CENTER) {
+            this.healAndRefill();
         }
+    }
+
+    healAndRefill() {
+        // Heal Team
+        this.player.team.forEach(mon => mon.currentHp = mon.maxHp);
+
+        // Refill Balls if low
+        if (this.player.inventory.pokeballs < 5) {
+            this.player.inventory.pokeballs = 5;
+        }
+
+        console.log("Team Healed and Supplies Refilled!");
+        // Visual feedback (simple alert or log for now)
+        // Could flash screen or show modal, but console + immediate effect is MVP
     }
 
     draw(ctx) {

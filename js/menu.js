@@ -67,15 +67,47 @@ export class MenuSystem {
             container.innerHTML = '<div class="list-item">No monsters yet.</div>';
             return;
         }
-        team.forEach(mon => {
+        team.forEach((mon, index) => {
             const div = document.createElement('div');
             div.className = 'list-item';
+
+            // Create inner HTML with a button if potions are available
+            let actionHtml = '';
+            if (mon.currentHp < mon.maxHp && this.game.player.inventory.potions > 0) {
+                actionHtml = `<button class="ui-btn btn-blue" style="font-size: 12px; padding: 5px; margin-top: 5px;" data-index="${index}">Heal (Potion)</button>`;
+            } else if (mon.currentHp < mon.maxHp) {
+                actionHtml = `<div style="font-size:12px; color: #aaa;">Needs Heal</div>`;
+            }
+
             div.innerHTML = `
                 <div style="color: ${mon.color}; font-weight: bold;">${mon.name} Lv${mon.level}</div>
                 <div style="font-size: 14px;">HP: ${mon.currentHp}/${mon.maxHp}</div>
+                ${actionHtml}
             `;
+
+            // Add click listener for the button
+            const btn = div.querySelector('button');
+            if (btn) {
+                btn.addEventListener('click', () => this.healMonster(index));
+            }
+
             container.appendChild(div);
         });
+    }
+
+    healMonster(index) {
+        const player = this.game.player;
+        const mon = player.team[index];
+
+        if (player.inventory.potions > 0 && mon.currentHp < mon.maxHp) {
+            player.inventory.potions--;
+            mon.currentHp = Math.min(mon.currentHp + 20, mon.maxHp);
+
+            // Re-render to show updates
+            const content = document.getElementById('submenu-content');
+            content.innerHTML = '';
+            this.renderTeam(content);
+        }
     }
 
     renderItems(container) {

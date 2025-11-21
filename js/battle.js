@@ -18,8 +18,87 @@ export class BattleSystem {
     initUI() {
         // Bind UI buttons
         document.getElementById('btn-attack').addEventListener('click', () => this.handleAction('ATTACK'));
-        document.getElementById('btn-catch').addEventListener('click', () => this.handleAction('CATCH'));
         document.getElementById('btn-run').addEventListener('click', () => this.handleAction('RUN'));
+
+        // Submenu triggers
+        document.getElementById('btn-bag').addEventListener('click', () => this.showBattleMenu('BAG'));
+        document.getElementById('btn-pkmn').addEventListener('click', () => this.showBattleMenu('PKMN'));
+        document.getElementById('btn-battle-back').addEventListener('click', () => this.closeBattleMenu());
+    }
+
+    showBattleMenu(type) {
+        const menu = document.getElementById('battle-submenu');
+        const content = document.getElementById('battle-submenu-content');
+        const title = document.getElementById('battle-submenu-title');
+
+        menu.classList.remove('hidden');
+        content.innerHTML = '';
+
+        if (type === 'BAG') {
+            title.innerText = "BAG";
+            this.renderBag(content);
+        } else if (type === 'PKMN') {
+            title.innerText = "POKEMON";
+            this.renderPokemon(content);
+        }
+    }
+
+    closeBattleMenu() {
+        document.getElementById('battle-submenu').classList.add('hidden');
+    }
+
+    renderBag(container) {
+        const inv = this.player.inventory;
+
+        // PokeBalls
+        const ballBtn = document.createElement('button');
+        ballBtn.className = 'ui-btn';
+        ballBtn.innerText = `PokeBall (x${inv.pokeballs})`;
+        ballBtn.onclick = () => {
+            this.handleAction('CATCH');
+            this.closeBattleMenu();
+        };
+        container.appendChild(ballBtn);
+
+        // Potions
+        const potionBtn = document.createElement('button');
+        potionBtn.className = 'ui-btn btn-blue';
+        potionBtn.innerText = `Potion (x${inv.potions})`;
+        potionBtn.onclick = () => {
+            if (inv.potions > 0) {
+                this.handleAction('POTION'); // Heal active
+                this.closeBattleMenu();
+            }
+        };
+        container.appendChild(potionBtn);
+    }
+
+    renderPokemon(container) {
+        this.player.team.forEach((mon, index) => {
+            const btn = document.createElement('button');
+            btn.className = 'ui-btn';
+            btn.style.borderColor = mon.color;
+            // Indicate active
+            const activePrefix = (mon === this.playerMon) ? "[ACTIVE] " : "";
+            btn.innerText = `${activePrefix}${mon.name} (HP: ${mon.currentHp}/${mon.maxHp})`;
+
+            btn.onclick = () => {
+                if (mon !== this.playerMon && mon.currentHp > 0) {
+                    this.switchPokemon(mon);
+                    this.closeBattleMenu();
+                }
+            };
+            container.appendChild(btn);
+        });
+    }
+
+    switchPokemon(newMon) {
+        this.playerMon = newMon;
+        this.log.push(`Go! ${newMon.name}!`);
+        this.updateLogUI();
+        // Switching takes a turn
+        this.turn = 1;
+        setTimeout(() => this.enemyTurn(), 1000);
     }
 
     updateLogUI() {
@@ -59,6 +138,9 @@ export class BattleSystem {
             case 'CATCH':
                 this.attemptCatch();
                 break;
+            case 'POTION':
+                this.usePotion();
+                break;
             case 'RUN':
                 this.runAway();
                 return; // End immediately
@@ -67,6 +149,20 @@ export class BattleSystem {
         if (this.isActive && this.turn === 1) {
             setTimeout(() => this.enemyTurn(), 1000);
         }
+    }
+
+    usePotion() {
+        if (this.player.inventory.potions <= 0) return;
+
+        this.player.inventory.potions--;
+        const healed = 20;
+        this.playerMon.currentHp = Math.min(this.playerMon.currentHp + healed, this.playerMon.maxHp);
+
+        this.log.push(`Used Potion on ${this.playerMon.name}!`);
+        this.log.push(`Recovered HP.`);
+        this.updateLogUI();
+
+        this.turn = 1;
     }
 
     playerAttack() {

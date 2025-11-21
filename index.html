@@ -34,10 +34,24 @@
             <!-- Battle UI -->
             <div id="battle-ui" class="hidden">
                 <div class="battle-info-box" id="battle-log"></div>
-                <div class="battle-controls">
-                    <button id="btn-attack" class="ui-btn btn-red">Attack</button>
-                    <button id="btn-catch" class="ui-btn btn-blue">Catch</button>
-                    <button id="btn-run" class="ui-btn btn-yellow">Run</button>
+
+                <!-- Battle Main Menu -->
+                <div id="battle-main-menu" class="battle-controls">
+                    <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                        <button id="btn-attack" class="ui-btn btn-red">Attack</button>
+                        <button id="btn-pkmn" class="ui-btn btn-blue">Pkmn</button>
+                    </div>
+                    <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                        <button id="btn-bag" class="ui-btn btn-yellow">Bag</button>
+                        <button id="btn-run" class="ui-btn">Run</button>
+                    </div>
+                </div>
+
+                <!-- Battle Submenus (Bag/Pkmn) overlay -->
+                <div id="battle-submenu" class="hidden" style="position:absolute; bottom:0; width:100%; background:#222; padding:10px; border-top:2px solid white;">
+                     <h3 id="battle-submenu-title" style="margin-bottom:5px;">Title</h3>
+                     <div id="battle-submenu-content" style="max-height:150px; overflow-y:auto;"></div>
+                     <button id="btn-battle-back" class="ui-btn" style="margin-top:5px;">Back</button>
                 </div>
             </div>
 

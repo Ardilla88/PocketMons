@@ -6,14 +6,15 @@ export const TileType = {
     GRASS: 0,
     WALL: 1,
     WATER: 2,
-    GROUND: 3
+    GROUND: 3,
+    CENTER: 4
 };
 
 // Simple ASCII representation for the map
-// W = Wall, G = Grass, . = Ground, ~ = Water
+// W = Wall, G = Grass, . = Ground, ~ = Water, C = Center (Heal)
 const MAP_LAYOUT = [
     "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",
-    "W............G...............W",
+    "W.C..........G...............W",
     "W............G...............W",
     "W...GGGG.....G...............W",
     "W...GGGG.....G...............W",
@@ -104,6 +105,9 @@ export class GameMap {
                     case TileType.WATER:
                         ctx.fillStyle = '#2196f3'; // Blue
                         break;
+                    case TileType.CENTER:
+                        ctx.fillStyle = '#ffd700'; // Gold/Yellow
+                        break;
                     case TileType.GROUND:
                     default:
                         ctx.fillStyle = '#8bc34a'; // Light Green/Ground
@@ -111,6 +115,15 @@ export class GameMap {
                 }
 
                 ctx.fillRect(Math.floor(x), Math.floor(y), TILE_SIZE, TILE_SIZE);
+
+                // Draw "C" on center tiles for clarity
+                if (tile === TileType.CENTER) {
+                    ctx.fillStyle = '#d32f2f';
+                    ctx.font = '20px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText("C", Math.floor(x) + TILE_SIZE/2, Math.floor(y) + TILE_SIZE/2);
+                }
             }
         }
     }
