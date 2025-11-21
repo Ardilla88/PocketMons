@@ -120,7 +120,7 @@ canvas {
     padding-bottom: 10px;
 }
 
-#menu-btn {
+#menu-btn, #fish-btn {
     width: 50px;
     height: 50px;
     background: rgba(0, 0, 0, 0.5);
@@ -135,8 +135,12 @@ canvas {
     margin-bottom: 20px;
 }
 
-#menu-btn:active {
+#menu-btn:active, #fish-btn:active {
     background: rgba(0, 0, 0, 0.8);
+}
+
+#fish-btn {
+    background: rgba(0, 0, 100, 0.5); /* Blue tint */
 }
 
 /* Generic UI Buttons */
