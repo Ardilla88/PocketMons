@@ -2,130 +2,109 @@ export class MenuSystem {
     constructor(game) {
         this.game = game;
         this.isOpen = false;
-        this.currentSubMenu = null; // null = Main Menu, 'items', 'monsters'
-
         this.init();
     }
 
     init() {
-        // Bind Menu Button
+        // Bind Toggle Button
         const menuBtn = document.getElementById('menu-btn');
         if (menuBtn) {
             menuBtn.addEventListener('touchstart', (e) => { e.preventDefault(); this.toggle(); });
             menuBtn.addEventListener('mousedown', (e) => { e.preventDefault(); this.toggle(); });
         }
+
+        // Bind Menu Options
+        document.getElementById('btn-menu-team').addEventListener('click', () => this.showSubMenu('monsters'));
+        document.getElementById('btn-menu-bag').addEventListener('click', () => this.showSubMenu('items'));
+        document.getElementById('btn-menu-close').addEventListener('click', () => this.toggle());
+        document.getElementById('btn-submenu-back').addEventListener('click', () => this.showSubMenu(null));
     }
 
     toggle() {
-        if (this.game.state === 'BATTLE') return; // Disable menu during battle
+        if (this.game.state === 'BATTLE') return;
 
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
             this.game.state = 'MENU';
-            this.currentSubMenu = null;
+            this.showSubMenu(null); // Reset to main
         } else {
             this.game.state = 'OVERWORLD';
+            // Explicitly hide menu elements
+            document.getElementById('menu-ui').classList.add('hidden');
+            document.getElementById('submenu-ui').classList.add('hidden');
         }
     }
 
-    handleInput(input) {
-        if (!this.isOpen) return;
+    showSubMenu(type) {
+        const menuUI = document.getElementById('menu-ui');
+        const submenuUI = document.getElementById('submenu-ui');
+        const content = document.getElementById('submenu-content');
+        const title = document.getElementById('submenu-title');
 
-        // Since we don't have a UI library, we'll use the Action button to cycle
-        // through submenus for this MVP, or rely on touch clicks on the rendered menu.
-        // Let's try to map Input to simple selection logic.
+        if (type === null) {
+            // Show Main Menu
+            menuUI.classList.remove('hidden');
+            submenuUI.classList.add('hidden');
+        } else {
+            // Show Sub Menu
+            menuUI.classList.add('hidden');
+            submenuUI.classList.remove('hidden');
+            content.innerHTML = ''; // Clear prev
 
-        if (input.keys.ACTION) {
-             // For MVP simplicity, let's just cycle Main -> Monsters -> Items -> Close
-             if (this.currentSubMenu === null) {
-                 this.currentSubMenu = 'monsters';
-             } else if (this.currentSubMenu === 'monsters') {
-                 this.currentSubMenu = 'items';
-             } else if (this.currentSubMenu === 'items') {
-                 this.toggle(); // Close
-             }
-             input.keys.ACTION = false; // Consume input
+            if (type === 'monsters') {
+                title.innerText = "TEAM";
+                this.renderTeam(content);
+            } else if (type === 'items') {
+                title.innerText = "BAG";
+                this.renderItems(content);
+            }
         }
     }
 
-    draw(ctx, width, height) {
-        if (!this.isOpen) return;
-
-        // Dim background
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.fillRect(0, 0, width, height);
-
-        // Draw Menu Box
-        const padding = 20;
-        const boxWidth = width - (padding * 2);
-        const boxHeight = height - (padding * 2);
-
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(padding, padding, boxWidth, boxHeight);
-
-        ctx.font = '24px Courier New';
-        ctx.fillStyle = 'white';
-        ctx.textAlign = 'center';
-
-        if (this.currentSubMenu === null) {
-            this.drawMainMenu(ctx, width, height);
-        } else if (this.currentSubMenu === 'monsters') {
-            this.drawMonsters(ctx, width, height);
-        } else if (this.currentSubMenu === 'items') {
-            this.drawItems(ctx, width, height);
-        }
-
-        // Footer Hint
-        ctx.font = '14px Courier New';
-        ctx.fillStyle = '#aaa';
-        ctx.fillText("Press [A] to Cycle / Close", width / 2, height - 40);
-    }
-
-    drawMainMenu(ctx, width, height) {
-        ctx.font = '30px Courier New';
-        ctx.fillText("PAUSE MENU", width / 2, 100);
-
-        ctx.font = '20px Courier New';
-        ctx.fillText("1. Monsters", width / 2, 200);
-        ctx.fillText("2. Items", width / 2, 240);
-        ctx.fillText("3. Close", width / 2, 280);
-
-        ctx.font = '14px Courier New';
-        ctx.fillStyle = '#aaa';
-        ctx.fillText("(Game Auto-Saves)", width / 2, 340);
-    }
-
-    drawMonsters(ctx, width, height) {
-        ctx.font = '30px Courier New';
-        ctx.fillText("YOUR TEAM", width / 2, 80);
-
+    renderTeam(container) {
         const team = this.game.player.team;
         if (team.length === 0) {
-            ctx.fillText("(No monsters yet)", width / 2, 200);
-        } else {
-            team.forEach((mon, index) => {
-                const y = 150 + (index * 60);
-                ctx.font = '20px Courier New';
-                ctx.textAlign = 'left';
-                ctx.fillStyle = mon.color;
-                ctx.fillText(`${mon.name} Lv${mon.level}`, 60, y);
-                ctx.fillStyle = 'white';
-                ctx.font = '16px Courier New';
-                ctx.fillText(`HP: ${mon.currentHp}/${mon.maxHp}`, 60, y + 25);
-            });
+            container.innerHTML = '<div class="list-item">No monsters yet.</div>';
+            return;
         }
-        ctx.textAlign = 'center'; // Reset
+        team.forEach(mon => {
+            const div = document.createElement('div');
+            div.className = 'list-item';
+            div.innerHTML = `
+                <div style="color: ${mon.color}; font-weight: bold;">${mon.name} Lv${mon.level}</div>
+                <div style="font-size: 14px;">HP: ${mon.currentHp}/${mon.maxHp}</div>
+            `;
+            container.appendChild(div);
+        });
     }
 
-    drawItems(ctx, width, height) {
-        ctx.font = '30px Courier New';
-        ctx.fillText("INVENTORY", width / 2, 100);
-
+    renderItems(container) {
         const inv = this.game.player.inventory;
+        container.innerHTML = `
+            <div class="list-item">PokeBalls: ${inv.pokeballs}</div>
+            <div class="list-item">Potions: ${inv.potions}</div>
+        `;
+    }
 
-        ctx.font = '24px Courier New';
-        ctx.fillText(`PokeBalls: ${inv.pokeballs}`, width / 2, 200);
-        ctx.fillText(`Potions: ${inv.potions}`, width / 2, 250);
+    updateUI() {
+        // Ensure visibility based on internal state
+        const menuUI = document.getElementById('menu-ui');
+        const submenuUI = document.getElementById('submenu-ui');
+
+        if (!this.isOpen) {
+            menuUI.classList.add('hidden');
+            submenuUI.classList.add('hidden');
+            return;
+        }
+
+        // If open, we rely on showSubMenu to set the correct classes.
+        // However, if main.js logic was interfering, we might need to enforce it here.
+        // But with the fix in main.js, we just need to ensure we aren't hidden by accident.
+        // For now, we trust the event-driven showSubMenu logic,
+        // but let's re-apply the current state just in case.
+
+        // Ideally we don't do this every frame, but it's cheap DOM manip.
+        // Actually, let's not fight the DOM. The state is set by events.
+        // We only need to ensure we are hidden if isOpen is false.
     }
 }

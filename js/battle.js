@@ -11,12 +11,30 @@ export class BattleSystem {
 
         this.log = []; // Battle log messages
         this.turn = 0; // 0 = Player, 1 = Enemy
+
+        this.initUI();
+    }
+
+    initUI() {
+        // Bind UI buttons
+        document.getElementById('btn-attack').addEventListener('click', () => this.handleAction('ATTACK'));
+        document.getElementById('btn-catch').addEventListener('click', () => this.handleAction('CATCH'));
+        document.getElementById('btn-run').addEventListener('click', () => this.handleAction('RUN'));
+    }
+
+    updateLogUI() {
+        const logEl = document.getElementById('battle-log');
+        if (!logEl) return;
+        // Show last 2 messages
+        const msgs = this.log.slice(-2);
+        logEl.innerHTML = msgs.join('<br>');
     }
 
     startBattle(enemyMonster) {
         this.isActive = true;
         this.enemy = enemyMonster;
         this.log = [`Wild ${this.enemy.name} appeared!`];
+        this.updateLogUI();
 
         // Select first monster in team, or create a temp one if empty (starter logic not fully implemented yet)
         if (this.player.team.length > 0) {
@@ -55,11 +73,13 @@ export class BattleSystem {
         const dmg = Math.max(1, this.playerMon.attack - 0); // Defense ignored for MVP
         this.enemy.currentHp -= dmg;
         this.log.push(`${this.playerMon.name} dealt ${dmg} dmg!`);
+        this.updateLogUI();
 
         if (this.enemy.currentHp <= 0) {
             this.enemy.currentHp = 0;
             this.log.push(`${this.enemy.name} fainted!`);
             this.log.push(`You won!`);
+            this.updateLogUI();
             setTimeout(() => this.endBattle(true), 2000);
         } else {
             this.turn = 1;
@@ -69,11 +89,13 @@ export class BattleSystem {
     attemptCatch() {
         if (this.player.inventory.pokeballs <= 0) {
             this.log.push("No PokeBalls left!");
+            this.updateLogUI();
             return; // Don't consume turn? Or do? Let's just not do anything.
         }
 
         this.player.inventory.pokeballs--;
         this.log.push("You threw a PokeBall!");
+        this.updateLogUI();
 
         // Simple catch formula: (MaxHP - CurrentHP) / MaxHP
         const hpFactor = (this.enemy.maxHp - this.enemy.currentHp) / this.enemy.maxHp;
@@ -81,6 +103,7 @@ export class BattleSystem {
 
         if (Math.random() < chance) {
             this.log.push(`Gotcha! ${this.enemy.name} was caught!`);
+            this.updateLogUI();
             // Rehydrate monster class if it's just data
             // If we loaded from JSON, we might need to re-instantiate, but here it's fresh.
             // Ensure the enemy is a proper object before saving
@@ -88,12 +111,14 @@ export class BattleSystem {
             setTimeout(() => this.endBattle(true), 2000);
         } else {
             this.log.push(`${this.enemy.name} broke free!`);
+            this.updateLogUI();
             this.turn = 1;
         }
     }
 
     runAway() {
         this.log.push("Got away safely!");
+        this.updateLogUI();
         setTimeout(() => this.endBattle(false), 1000);
     }
 
@@ -103,11 +128,13 @@ export class BattleSystem {
         const dmg = Math.max(1, this.enemy.attack - 0);
         this.playerMon.currentHp -= dmg;
         this.log.push(`${this.enemy.name} dealt ${dmg} dmg!`);
+        this.updateLogUI();
 
         if (this.playerMon.currentHp <= 0) {
             this.playerMon.currentHp = 0;
             this.log.push(`${this.playerMon.name} fainted!`);
             this.log.push(`You lost...`); // Simple Game Over handling
+            this.updateLogUI();
             setTimeout(() => this.endBattle(false), 2000);
         } else {
             this.turn = 0;
@@ -148,24 +175,6 @@ export class BattleSystem {
         ctx.fillText(`${this.playerMon.name}`, playerX + 70, playerY + 20);
         ctx.fillText(`HP: ${this.playerMon.currentHp}/${this.playerMon.maxHp}`, playerX + 70, playerY + 35);
 
-        // Menu / Text Box
-        const menuHeight = height * 0.3;
-        ctx.fillStyle = '#333';
-        ctx.fillRect(0, height - menuHeight, width, menuHeight);
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(5, height - menuHeight + 5, width - 10, menuHeight - 10);
-
-        // Text Log (Last 2 lines)
-        ctx.fillStyle = 'white';
-        const logStart = Math.max(0, this.log.length - 2);
-        if (this.log[logStart]) ctx.fillText(this.log[logStart], 20, height - menuHeight + 30);
-        if (this.log[logStart+1]) ctx.fillText(this.log[logStart+1], 20, height - menuHeight + 55);
-
-        // Controls Hint
-        ctx.font = '12px Courier New';
-        ctx.fillStyle = '#aaa';
-        ctx.fillText("[A]ttack  [▲]Catch  [▼]Run", 20, height - 20);
-        // Note: We need to map inputs to these actions or show on-screen buttons
+        // Controls are now DOM based
     }
 }

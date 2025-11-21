@@ -10,6 +10,7 @@
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer">
+            <!-- Overworld Controls -->
             <div id="controls">
                 <div id="dpad">
                     <div class="dpad-row">
@@ -27,6 +28,37 @@
                 <div id="action-area">
                     <div id="menu-btn">☰</div>
                     <div id="action-btn">A</div>
+                </div>
+            </div>
+
+            <!-- Battle UI -->
+            <div id="battle-ui" class="hidden">
+                <div class="battle-info-box" id="battle-log"></div>
+                <div class="battle-controls">
+                    <button id="btn-attack" class="ui-btn btn-red">Attack</button>
+                    <button id="btn-catch" class="ui-btn btn-blue">Catch</button>
+                    <button id="btn-run" class="ui-btn btn-yellow">Run</button>
+                </div>
+            </div>
+
+            <!-- Menu UI -->
+            <div id="menu-ui" class="hidden">
+                <div class="menu-box">
+                    <h2>PAUSE</h2>
+                    <button id="btn-menu-team" class="ui-btn">Team</button>
+                    <button id="btn-menu-bag" class="ui-btn">Bag</button>
+                    <button id="btn-menu-close" class="ui-btn btn-red">Resume</button>
+                </div>
+            </div>
+
+            <!-- Submenu UI (Team/Bag details) -->
+            <div id="submenu-ui" class="hidden">
+                <div class="menu-box">
+                    <h2 id="submenu-title">TITLE</h2>
+                    <div id="submenu-content">
+                        <!-- List items will be injected here -->
+                    </div>
+                    <button id="btn-submenu-back" class="ui-btn btn-yellow">Back</button>
                 </div>
             </div>
         </div>

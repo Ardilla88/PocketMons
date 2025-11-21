@@ -43,6 +43,11 @@ canvas {
     padding: 20px;
 }
 
+.hidden {
+    display: none !important;
+}
+
+/* Overworld Controls */
 #controls {
     width: 100%;
     height: 180px;
@@ -135,4 +140,120 @@ canvas {
 
 #action-btn:active {
     background: rgba(255, 0, 0, 0.8);
+}
+
+/* Generic UI Buttons */
+.ui-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0;
+    background: #444;
+    border: 2px solid white;
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 18px;
+    border-radius: 8px;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.ui-btn:active {
+    background: #666;
+    transform: scale(0.98);
+}
+
+.btn-red { background: #d32f2f; }
+.btn-red:active { background: #b71c1c; }
+
+.btn-blue { background: #1976d2; }
+.btn-blue:active { background: #0d47a1; }
+
+.btn-yellow { background: #fbc02d; color: black; }
+.btn-yellow:active { background: #f9a825; }
+
+
+/* Battle UI */
+#battle-ui {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    pointer-events: none;
+}
+
+.battle-info-box {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid white;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+}
+
+.battle-controls {
+    display: flex;
+    gap: 10px;
+    pointer-events: auto;
+}
+
+.battle-controls .ui-btn {
+    margin: 0;
+    flex: 1;
+}
+
+
+/* Menu UI */
+#menu-ui, #submenu-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    z-index: 10;
+}
+
+.menu-box {
+    width: 80%;
+    max-width: 400px;
+    background: #333;
+    border: 4px double white;
+    padding: 20px;
+    text-align: center;
+}
+
+.menu-box h2 {
+    margin-bottom: 20px;
+    border-bottom: 1px solid #555;
+    padding-bottom: 10px;
+}
+
+#submenu-content {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.list-item {
+    background: #444;
+    border: 1px solid #666;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
 }

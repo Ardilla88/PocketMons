@@ -64,6 +64,9 @@ export class Game {
     }
 
     update(deltaTime) {
+        // Sync UI visibility every frame (or could be event based)
+        this.updateUIState();
+
         if (this.state === 'OVERWORLD') {
             const finishedMoving = this.player.update(deltaTime, this.input);
             this.camera.follow(this.player, this.map.width, this.map.height, TILE_SIZE);
@@ -80,30 +83,9 @@ export class Game {
                 this.checkEncounter();
             }
         } else if (this.state === 'BATTLE') {
-            // Battle Input Mapping
-            // Ideally we'd have on screen buttons for this, but for now we reuse input
-            if (this.input.keys.ACTION) {
-                // Debounce logic needed? InputHandler handles raw state.
-                // For this simple test, we'll just trigger attack on Action
-                // But we need a way to select Run or Catch.
-                // Let's map D-pad to select action? Too complex for MVP without visual menu cursor.
-                // Simplified Controls for MVP:
-                // Action (A) = Attack
-                // Up = Catch
-                // Down = Run
-                this.battle.handleAction('ATTACK');
-                this.input.keys.ACTION = false; // Prevent spam
-            }
-            if (this.input.keys.UP) {
-                this.battle.handleAction('CATCH');
-                this.input.keys.UP = false;
-            }
-            if (this.input.keys.DOWN) {
-                this.battle.handleAction('RUN');
-                this.input.keys.DOWN = false;
-            }
+            // Input is now handled by DOM buttons in BattleSystem
         } else if (this.state === 'MENU') {
-            this.menu.handleInput(this.input);
+            // Input is now handled by DOM buttons in MenuSystem
         }
     }
 
@@ -140,11 +122,28 @@ export class Game {
         } else if (this.state === 'BATTLE') {
             this.battle.draw(ctx, this.canvas.width, this.canvas.height);
         } else if (this.state === 'MENU') {
-            // Draw overworld behind menu (optional, or just background)
-             // Draw map
+            // Draw overworld behind menu
             this.map.draw(ctx, this.camera.x, this.camera.y, this.canvas.width, this.canvas.height);
+            // Menu is now DOM-based, no canvas draw needed
+        }
+    }
 
-            this.menu.draw(ctx, this.canvas.width, this.canvas.height);
+    updateUIState() {
+        const controls = document.getElementById('controls');
+        const battleUI = document.getElementById('battle-ui');
+
+        // Hide game controls/battle UI based on state
+        if (this.state === 'OVERWORLD') {
+            controls.classList.remove('hidden');
+            battleUI.classList.add('hidden');
+            // Menu handled by MenuSystem
+        } else if (this.state === 'BATTLE') {
+            controls.classList.add('hidden');
+            battleUI.classList.remove('hidden');
+        } else if (this.state === 'MENU') {
+            controls.classList.add('hidden');
+            battleUI.classList.add('hidden');
+            this.menu.updateUI();
         }
     }
 
