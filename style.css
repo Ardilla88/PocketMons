@@ -164,7 +164,7 @@ canvas {
     left: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Space between Top (Log) and Bottom (Controls) */
+    justify-content: flex-end; /* Push controls to bottom */
     padding: 20px;
     pointer-events: none;
 }
