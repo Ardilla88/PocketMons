@@ -42,4 +42,25 @@ export class Monster {
         const randomType = types[Math.floor(Math.random() * types.length)];
         return new Monster(randomType, level);
     }
+
+    static fromJSON(data) {
+        // Re-create monster from saved data
+        const mon = new Monster({
+            name: data.name,
+            color: data.color,
+            hp: 0, // placeholder, will be overwritten
+            attack: 0
+        }, data.level);
+
+        mon.id = data.id;
+        mon.maxHp = data.maxHp;
+        mon.currentHp = data.currentHp;
+        mon.attack = data.attack;
+
+        // Handle migration for XP
+        mon.xp = (data.xp !== undefined) ? data.xp : 0;
+        mon.maxXp = (data.maxXp !== undefined) ? data.maxXp : (data.level * 50);
+
+        return mon;
+    }
 }

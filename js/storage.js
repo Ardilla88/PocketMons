@@ -1,4 +1,5 @@
 import { TILE_SIZE } from './map.js';
+import { Monster } from './monster.js';
 
 const STORAGE_KEY = 'webmon_save_data_v1';
 
@@ -30,7 +31,10 @@ export class Storage {
             player.y = data.y * TILE_SIZE;
             player.targetX = player.x;
             player.targetY = player.y;
-            player.team = data.team || [];
+
+            // Hydrate monsters
+            player.team = (data.team || []).map(monData => Monster.fromJSON(monData));
+
             player.inventory = data.inventory || { pokeballs: 5, potions: 2 };
 
             console.log("Game Loaded");
