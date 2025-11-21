@@ -18,7 +18,18 @@ export class BattleSystem {
         this.playerVisualHp = 0;
         this.enemyVisualHp = 0;
 
+        this.playerFlashTime = 0;
+        this.enemyFlashTime = 0;
+
         this.initUI();
+    }
+
+    triggerDamageAnim(isPlayer) {
+        if (isPlayer) {
+            this.playerFlashTime = 20; // Flash for 20 frames
+        } else {
+            this.enemyFlashTime = 20;
+        }
     }
 
     update(deltaTime) {
@@ -303,6 +314,8 @@ export class BattleSystem {
     playerAttack() {
         const dmg = Math.max(1, this.playerMon.attack - 0); // Defense ignored for MVP
         this.enemy.currentHp -= dmg;
+        this.triggerDamageAnim(false); // Flash enemy
+
         this.log.push(`${this.playerMon.name} dealt ${dmg} dmg!`);
         this.updateLogUI();
 
@@ -358,6 +371,8 @@ export class BattleSystem {
 
         const dmg = Math.max(1, this.enemy.attack - 0);
         this.playerMon.currentHp -= dmg;
+        this.triggerDamageAnim(true); // Flash player
+
         this.log.push(`${this.enemy.name} dealt ${dmg} dmg!`);
         this.updateLogUI();
 
@@ -442,7 +457,7 @@ export class BattleSystem {
 
         // Animation Loop
         let frame = 0;
-        const maxFrames = 100;
+        const maxFrames = 300;
         const centerX = evoCanvas.width / 2;
         const centerY = evoCanvas.height / 2;
         const size = 50;
@@ -457,7 +472,7 @@ export class BattleSystem {
 
             if (frame < maxFrames) {
                 // Flash
-                if (Math.floor(frame / 10) % 2 === 0) {
+                if (Math.floor(frame / 30) % 2 === 0) {
                     ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
                 } else {
                     // Draw Pentagon
@@ -548,18 +563,35 @@ export class BattleSystem {
         // Enemy (Top Right)
         const enemyX = width * 0.7;
         const enemyY = height * 0.2;
-        ctx.fillStyle = this.enemy.color;
-        ctx.fillRect(enemyX, enemyY, 60, 60);
+
+        if (this.enemyFlashTime > 0) {
+            this.enemyFlashTime--;
+        }
+
+        // Draw Enemy if not blinking out
+        if (this.enemyFlashTime <= 0 || Math.floor(this.enemyFlashTime / 4) % 2 === 0) {
+            ctx.fillStyle = this.enemyFlashTime > 0 ? '#ffffff' : this.enemy.color;
+            ctx.fillRect(enemyX, enemyY, 60, 60);
+        }
 
         // Player Mon (Bottom Left)
         const playerX = width * 0.2;
         const playerY = height * 0.5;
 
-        if (this.playerMon.shape === 'PENTAGON') {
-             this.drawPentagon(ctx, playerX + 30, playerY + 30, 60, this.playerMon.color);
-        } else {
-             ctx.fillStyle = this.playerMon.color;
-             ctx.fillRect(playerX, playerY, 60, 60);
+        if (this.playerFlashTime > 0) {
+            this.playerFlashTime--;
+        }
+
+        // Draw Player if not blinking out
+        if (this.playerFlashTime <= 0 || Math.floor(this.playerFlashTime / 4) % 2 === 0) {
+            const color = this.playerFlashTime > 0 ? '#ffffff' : this.playerMon.color;
+
+            if (this.playerMon.shape === 'PENTAGON') {
+                 this.drawPentagon(ctx, playerX + 30, playerY + 30, 60, color);
+            } else {
+                 ctx.fillStyle = color;
+                 ctx.fillRect(playerX, playerY, 60, 60);
+            }
         }
     }
 }
