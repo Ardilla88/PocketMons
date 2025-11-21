@@ -97,6 +97,20 @@ export class BattleSystem {
         document.getElementById('btn-battle-back').addEventListener('click', () => this.closeBattleMenu());
     }
 
+    setUIState(state) {
+        const logEl = document.getElementById('battle-log');
+        const menuEl = document.getElementById('battle-main-menu');
+
+        if (state === 'LOG') {
+            logEl.classList.remove('hidden');
+            menuEl.classList.add('hidden');
+            this.closeBattleMenu(); // Ensure submenus are closed
+        } else if (state === 'MENU') {
+            logEl.classList.add('hidden');
+            menuEl.classList.remove('hidden');
+        }
+    }
+
     showBattleMenu(type, hideBack = false) {
         const menu = document.getElementById('battle-submenu');
         const content = document.getElementById('battle-submenu-content');
@@ -181,10 +195,12 @@ export class BattleSystem {
 
         this.log.push(`Go! ${newMon.name}!`);
         this.updateLogUI();
+        this.setUIState('LOG');
 
         if (isForced) {
             // Free turn if previous mon fainted
             this.turn = 0;
+            setTimeout(() => this.setUIState('MENU'), 1500);
         } else {
             // Switching takes a turn
             this.turn = 1;
@@ -205,6 +221,7 @@ export class BattleSystem {
         this.enemy = enemyMonster;
         this.log = [`Wild ${this.enemy.name} appeared!`];
         this.updateLogUI();
+        this.setUIState('LOG');
 
         // Select first monster in team, or create a temp one if empty (starter logic not fully implemented yet)
         if (this.player.team.length > 0) {
@@ -222,6 +239,9 @@ export class BattleSystem {
 
         this.log.push(`Go! ${this.playerMon.name}!`);
         this.turn = 0; // Player starts
+        setTimeout(() => {
+            if (this.isActive) this.setUIState('MENU');
+        }, 2000);
     }
 
     handleAction(action) {
@@ -230,6 +250,7 @@ export class BattleSystem {
 
         // Block further input immediately
         this.turn = -1;
+        this.setUIState('LOG');
 
         switch(action) {
             case 'ATTACK':
@@ -250,7 +271,7 @@ export class BattleSystem {
         // or call endBattle which clears isActive.
 
         if (this.isActive && this.turn === 1) {
-            setTimeout(() => this.enemyTurn(), 1000);
+            setTimeout(() => this.enemyTurn(), 1500);
         }
     }
 
@@ -343,6 +364,9 @@ export class BattleSystem {
             }
         } else {
             this.turn = 0;
+            setTimeout(() => {
+                if (this.isActive) this.setUIState('MENU');
+            }, 1500);
         }
     }
 
@@ -403,6 +427,8 @@ export class BattleSystem {
         };
 
         menu.appendChild(btn);
+        // Show the "Menu" (which now contains only the Continue button)
+        this.setUIState('MENU');
     }
 
     restoreUI() {
