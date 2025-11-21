@@ -411,13 +411,94 @@ export class BattleSystem {
             }
             this.updateLogUI();
 
-            // Switch to Continue button
-            this.showContinueButton(true);
+            if (leveledUp && this.playerMon.level === 5) {
+                // Start Evolution Sequence instead of showing Continue immediately
+                // We'll use a small delay to let the level up message show
+                setTimeout(() => this.startEvolutionSequence(), 2000);
+            } else {
+                // Switch to Continue button
+                this.showContinueButton(true);
+            }
         } else {
             // Lost or Ran
             this.isActive = false;
             this.onBattleEnd(win);
         }
+    }
+
+    startEvolutionSequence() {
+        // Hide Battle UI elements
+        document.getElementById('battle-ui').classList.add('hidden');
+        const evoScreen = document.getElementById('evolution-screen');
+        evoScreen.classList.remove('hidden');
+
+        const evoText = document.getElementById('evolution-text');
+        const evoCanvas = document.getElementById('evolution-canvas');
+        const btnOk = document.getElementById('btn-evolution-ok');
+        const ctx = evoCanvas.getContext('2d');
+
+        evoText.innerText = `What? ${this.playerMon.name} is evolving!`;
+        btnOk.classList.add('hidden');
+
+        // Animation Loop
+        let frame = 0;
+        const maxFrames = 100;
+        const centerX = evoCanvas.width / 2;
+        const centerY = evoCanvas.height / 2;
+        const size = 50;
+
+        const animate = () => {
+            ctx.clearRect(0, 0, evoCanvas.width, evoCanvas.height);
+
+            // Interpolate Shape or Flash
+            // Simple flash effect: toggling between Rect and Pentagon or color
+
+            ctx.fillStyle = this.playerMon.color;
+
+            if (frame < maxFrames) {
+                // Flash
+                if (Math.floor(frame / 10) % 2 === 0) {
+                    ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
+                } else {
+                    // Draw Pentagon
+                    this.drawPentagon(ctx, centerX, centerY, size, this.playerMon.color);
+                }
+                frame++;
+                requestAnimationFrame(animate);
+            } else {
+                // Finalize
+                this.playerMon.shape = 'PENTAGON';
+                this.playerMon.name += "Gon"; // Simple name change
+                this.drawPentagon(ctx, centerX, centerY, size, this.playerMon.color);
+
+                evoText.innerText = `Congratulations! Your ${this.playerMon.name.replace("Gon", "")} evolved into ${this.playerMon.name}!`;
+                btnOk.classList.remove('hidden');
+
+                btnOk.onclick = () => {
+                    evoScreen.classList.add('hidden');
+                    document.getElementById('battle-ui').classList.remove('hidden');
+                    this.showContinueButton(true);
+                };
+            }
+        };
+
+        animate();
+    }
+
+    drawPentagon(ctx, x, y, size, color) {
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+            // -18 to start pointing up? 360/5 = 72.
+            // Start at top: -90 degrees.
+            const angle = (i * 72 - 90) * Math.PI / 180;
+            const px = x + size/1.5 * Math.cos(angle);
+            const py = y + size/1.5 * Math.sin(angle);
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+        ctx.fill();
     }
 
     showContinueButton(win) {
@@ -473,7 +554,12 @@ export class BattleSystem {
         // Player Mon (Bottom Left)
         const playerX = width * 0.2;
         const playerY = height * 0.5;
-        ctx.fillStyle = this.playerMon.color;
-        ctx.fillRect(playerX, playerY, 60, 60);
+
+        if (this.playerMon.shape === 'PENTAGON') {
+             this.drawPentagon(ctx, playerX + 30, playerY + 30, 60, this.playerMon.color);
+        } else {
+             ctx.fillStyle = this.playerMon.color;
+             ctx.fillRect(playerX, playerY, 60, 60);
+        }
     }
 }

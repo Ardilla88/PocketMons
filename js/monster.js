@@ -16,6 +16,7 @@ export class Monster {
         this.xp = 0;
         this.maxXp = level * 50;
         this.id = Math.random().toString(36).substr(2, 9); // Unique ID
+        this.shape = 'RECTANGLE'; // Default shape
     }
 
     gainXp(amount) {
@@ -66,6 +67,7 @@ export class Monster {
         // Handle migration for XP
         mon.xp = (data.xp !== undefined) ? data.xp : 0;
         mon.maxXp = (data.maxXp !== undefined) ? data.maxXp : (data.level * 50);
+        mon.shape = (data.shape !== undefined) ? data.shape : 'RECTANGLE';
 
         return mon;
     }
