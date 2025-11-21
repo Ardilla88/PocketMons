@@ -1,0 +1,113 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none; /* Prevent text selection on touch */
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: #202020;
+    color: white;
+    overflow: hidden; /* Prevent scrolling */
+    font-family: 'Courier New', Courier, monospace;
+}
+
+#game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+canvas {
+    background-color: #000;
+    image-rendering: pixelated; /* Keep pixel art sharp */
+}
+
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+}
+
+#controls {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    pointer-events: auto; /* Re-enable clicks for controls */
+}
+
+#dpad {
+    width: 150px;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.dpad-row {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+}
+
+.dpad-btn {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.3);
+    border: 2px solid white;
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.dpad-btn:active {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.dpad-center {
+    width: 50px;
+    height: 50px;
+}
+
+#action-area {
+    height: 150px;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+}
+
+#action-btn {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 0, 0, 0.5);
+    border: 2px solid white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#action-btn:active {
+    background: rgba(255, 0, 0, 0.8);
+}
