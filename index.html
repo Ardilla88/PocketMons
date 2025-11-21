@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="version-watermark"></div>
     <div id="game-container">
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer">
@@ -81,7 +82,7 @@
                 </div>
 
                 <!-- Battle Submenus (Bag/Pkmn) overlay -->
-                <div id="battle-submenu" class="hidden" style="position:absolute; bottom:0; width:100%; background:#222; padding:10px; border-top:2px solid white;">
+                <div id="battle-submenu" class="hidden">
                      <h3 id="battle-submenu-title" style="margin-bottom:5px;">Title</h3>
                      <div id="battle-submenu-content" style="max-height:150px; overflow-y:auto;"></div>
                      <button id="btn-battle-back" class="ui-btn" style="margin-top:5px;">Back</button>

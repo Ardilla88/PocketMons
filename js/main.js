@@ -6,9 +6,13 @@ import { Storage } from './storage.js';
 import { Monster } from './monster.js';
 import { BattleSystem } from './battle.js';
 import { MenuSystem } from './menu.js';
+import { VERSION } from './config.js';
 
 export class Game {
     constructor() {
+        // Set Version
+        document.getElementById('version-watermark').innerText = VERSION;
+
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
 
