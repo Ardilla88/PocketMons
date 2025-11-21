@@ -246,30 +246,61 @@ export class BattleSystem {
     endBattle(win) {
         // Ensure this only runs once
         if (!this.isActive) return;
-        this.isActive = false;
+        // Don't set isActive = false yet, keep it drawing so we see the UI
 
         if (win) {
             // Award XP
             const xpAmount = 20 * this.enemy.level;
             const leveledUp = this.playerMon.gainXp(xpAmount);
 
-            this.log.push(`Gained ${xpAmount} XP!`);
+            this.log.push(`Won! Gained ${xpAmount} XP.`);
+            if (leveledUp) {
+                 this.log.push(`Leveled up to ${this.playerMon.level}!`);
+            }
             this.updateLogUI();
 
-            if (leveledUp) {
-                 this.log.push(`${this.playerMon.name} grew to Level ${this.playerMon.level}!`);
-                 this.updateLogUI();
-                 // alert removed to prevent blocking issues
-            }
+            // Switch to Continue button
+            this.showContinueButton(true);
+        } else {
+            // Lost or Ran
+            this.isActive = false;
+            this.onBattleEnd(win);
         }
+    }
 
-        // Delay slightly to let user read log?
-        // Since we can't easily block, we just proceed.
-        // The user will see the log flash or we rely on them seeing it in menu later.
-        // Or we could set a timeout here before calling onBattleEnd,
-        // but that requires managing the "Battle Over" state.
-        // For MVP fix, we just close.
-        this.onBattleEnd(win);
+    showContinueButton(win) {
+        const menu = document.getElementById('battle-main-menu');
+
+        // Clear existing buttons
+        menu.innerHTML = '';
+
+        const btn = document.createElement('button');
+        btn.className = 'ui-btn btn-yellow';
+        btn.innerText = "Continue";
+        btn.style.height = "60px";
+        btn.onclick = () => {
+            this.isActive = false;
+            this.onBattleEnd(win);
+            // Restore buttons for next time (optional, initUI handles it usually but better safe)
+            this.restoreUI();
+        };
+
+        menu.appendChild(btn);
+    }
+
+    restoreUI() {
+        const menu = document.getElementById('battle-main-menu');
+        menu.innerHTML = `
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                <button id="btn-attack" class="ui-btn btn-red">Attack</button>
+                <button id="btn-pkmn" class="ui-btn btn-blue">Pkmn</button>
+            </div>
+            <div style="flex:1; display:flex; flex-direction:column; gap:5px;">
+                <button id="btn-bag" class="ui-btn btn-yellow">Bag</button>
+                <button id="btn-run" class="ui-btn">Run</button>
+            </div>
+        `;
+        this.initUI(); // Re-bind listeners
     }
 
     draw(ctx, width, height) {
@@ -298,8 +329,17 @@ export class BattleSystem {
 
         // Player Stats
         ctx.fillStyle = 'white';
-        ctx.fillText(`${this.playerMon.name}`, playerX + 70, playerY + 20);
+        ctx.fillText(`${this.playerMon.name} Lv${this.playerMon.level}`, playerX + 70, playerY + 20);
         ctx.fillText(`HP: ${this.playerMon.currentHp}/${this.playerMon.maxHp}`, playerX + 70, playerY + 35);
+
+        // XP Bar Background
+        ctx.fillStyle = '#444';
+        ctx.fillRect(playerX + 70, playerY + 45, 100, 5);
+
+        // XP Bar Fill
+        const xpRatio = this.playerMon.xp / this.playerMon.maxXp;
+        ctx.fillStyle = '#00bcd4'; // Cyan
+        ctx.fillRect(playerX + 70, playerY + 45, 100 * xpRatio, 5);
 
         // Controls are now DOM based
     }
