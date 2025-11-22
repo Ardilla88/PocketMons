@@ -444,6 +444,7 @@ export class BattleSystem {
             }
         } else {
             // Lost or Ran
+            this.audio.fadeOut();
             this.isActive = false;
             this.onBattleEnd(win);
         }
