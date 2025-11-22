@@ -40,8 +40,8 @@ export class Monster {
     }
 
     static generateRandom(level = 1) {
-        // 1% chance for Fernorlax
-        if (Math.random() < 0.01) {
+        // 5% chance for Fernorlax
+        if (Math.random() < 0.05) {
             return new Monster(MonsterType.FERNORLAX, level);
         }
 
