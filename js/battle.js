@@ -1,8 +1,10 @@
 import { Monster } from './monster.js';
+import { AudioManager } from './audio.js';
 
 export class BattleSystem {
     constructor(player, onBattleEnd) {
         this.player = player;
+        this.audio = new AudioManager();
         this.onBattleEnd = onBattleEnd;
         this.isActive = false;
 
@@ -241,6 +243,12 @@ export class BattleSystem {
     startBattle(enemyMonster) {
         this.isActive = true;
         this.enemy = enemyMonster;
+
+        // Rick Roll Check
+        if (this.enemy.name === 'Fernorlax') {
+            this.audio.playRickRoll();
+        }
+
         this.log = [`Wild ${this.enemy.name} appeared!`];
         this.updateLogUI();
         this.setUIState('LOG');
@@ -521,6 +529,9 @@ export class BattleSystem {
 
         // Clear existing buttons
         menu.innerHTML = '';
+
+        // Fade out music if playing
+        this.audio.fadeOut();
 
         const btn = document.createElement('button');
         btn.className = 'ui-btn btn-yellow';

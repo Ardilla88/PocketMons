@@ -120,5 +120,42 @@
         </div>
     </div>
     <script type="module" src="js/main.js"></script>
+    <!-- Hidden YouTube Player -->
+    <div id="player" style="position: absolute; top: -9999px; left: -9999px; width: 1px; height: 1px;"></div>
+    <script>
+        // YouTube IFrame API
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        window.youtubePlayer = null;
+        function onYouTubeIframeAPIReady() {
+            window.youtubePlayer = new YT.Player('player', {
+                height: '1',
+                width: '1',
+                videoId: 'dQw4w9WgXcQ',
+                playerVars: {
+                    'playsinline': 1,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'dQw4w9WgXcQ'
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Player ready
+            console.log("YouTube Player Ready");
+        }
+
+        function onPlayerStateChange(event) {
+            // Handle state changes if needed
+        }
+    </script>
 </body>
 </html>
