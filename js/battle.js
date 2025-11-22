@@ -371,6 +371,7 @@ export class BattleSystem {
     runAway() {
         this.log.push("Got away safely!");
         this.updateLogUI();
+        this.audio.fadeOut(); // Start fading immediately
         setTimeout(() => this.endBattle(false), 1000);
     }
 

@@ -28,7 +28,7 @@ export class AudioManager {
         if (this.fadeInterval) clearInterval(this.fadeInterval);
 
         this.fadeInterval = setInterval(() => {
-            this.volume -= 5;
+            this.volume -= 10; // Faster fade (1 second)
             if (this.volume <= 0) {
                 this.volume = 0;
                 window.youtubePlayer.setVolume(0);
@@ -37,6 +37,6 @@ export class AudioManager {
             } else {
                 window.youtubePlayer.setVolume(this.volume);
             }
-        }, 100); // 2 seconds fade out
+        }, 100);
     }
 }
